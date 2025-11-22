@@ -35,10 +35,14 @@ public class HandleClient implements Runnable {
             int data = 0;
             while (!this.currentClient.isClosed()) {
                 System.out.println("Waiting for data...");
+                try{
                 while ((data = clientInput.read()) != 4) {
                     System.out.println(data);
                     
                     line += (char) data;
+                }}catch(SocketException ex){
+                    line = "\\bye";
+                    System.out.println("client forced closed");
                 }
                 data=0;
                 System.out.println("got msg : " + line + " clients size : " + clients.size());
@@ -47,7 +51,8 @@ public class HandleClient implements Runnable {
                     this.clientInput.close();
                     this.clientOutput.close();
                     System.out.println("did client removed from the clients list = " + clients.remove(currentClient));
-                } else {
+                } 
+                else {
                     for (Socket client : clients) {
                         OutputStream clientOut = client.getOutputStream();
                         //char[] message = line.toCharArray();
